@@ -609,20 +609,37 @@
 
   <!-- ADMIN TAB -->
   <div id="tab-admin" class="tab-content fade-in" style="display:none">
-    <div class="admin-bar">
-      <div>
-        <div class="admin-label">⚙️ Adminpanel</div>
-        <div style="font-size:13px;color:var(--text2);margin-top:2px">Lägg till deltagare och deras tips. Sätt matchresultat för automatisk rättning.</div>
+
+    <!-- Lösenordsskärm -->
+    <div id="adminLock" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:20px">
+      <div style="font-size:48px">🔒</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--gold)">Adminpanel</div>
+      <div style="color:var(--text2);font-size:14px">Ange lösenord för att fortsätta</div>
+      <div style="display:flex;gap:10px;width:100%;max-width:340px">
+        <input class="form-input" id="adminPasswordInput" type="password" placeholder="Lösenord" onkeydown="handlePasswordKey(event)" style="flex:1" />
+        <button class="btn btn-primary" onclick="checkAdminPassword()">Öppna</button>
       </div>
-      <div class="admin-actions">
-        <button class="btn btn-primary" onclick="openAddPlayer()">+ Lägg till deltagare</button>
-        <button class="btn btn-ghost" onclick="exportData()">⬇ Exportera JSON</button>
-        <button class="btn btn-ghost" onclick="importTrigger()">⬆ Importera JSON</button>
-        <button class="btn btn-ghost" onclick="resetData()" style="color:var(--red)">🗑 Rensa allt</button>
-      </div>
+      <div id="adminPasswordError" style="display:none;color:var(--red);font-size:13px">Fel lösenord, försök igen.</div>
     </div>
-    <div id="adminPlayerList"></div>
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)" />
+
+    <!-- Admininnehåll (dolt tills lösenord angivits) -->
+    <div id="adminContent" style="display:none">
+      <div class="admin-bar">
+        <div>
+          <div class="admin-label">⚙️ Adminpanel</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:2px">Lägg till deltagare och deras tips. Sätt matchresultat för automatisk rättning.</div>
+        </div>
+        <div class="admin-actions">
+          <button class="btn btn-primary" onclick="openAddPlayer()">+ Lägg till deltagare</button>
+          <button class="btn btn-ghost" onclick="exportData()">⬇ Exportera JSON</button>
+          <button class="btn btn-ghost" onclick="importTrigger()">⬆ Importera JSON</button>
+          <button class="btn btn-ghost" onclick="resetData()" style="color:var(--red)">🗑 Rensa allt</button>
+        </div>
+      </div>
+      <div id="adminPlayerList"></div>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)" />
+    </div>
+
   </div>
 
 </div><!-- end container -->
@@ -1146,6 +1163,33 @@ function resetData() {
 }
 
 // ============================================================
+// ADMIN PASSWORD
+// ============================================================
+const ADMIN_PASSWORD = 'babybjorn2026';
+let adminUnlocked = false;
+
+function checkAdminPassword() {
+  if (adminUnlocked) return true;
+  const input = document.getElementById('adminPasswordInput').value;
+  if (input === ADMIN_PASSWORD) {
+    adminUnlocked = true;
+    document.getElementById('adminLock').style.display = 'none';
+    document.getElementById('adminContent').style.display = '';
+    return true;
+  } else {
+    document.getElementById('adminPasswordError').style.display = '';
+    document.getElementById('adminPasswordInput').value = '';
+    document.getElementById('adminPasswordInput').focus();
+    return false;
+  }
+}
+
+function handlePasswordKey(e) {
+  if (e.key === 'Enter') checkAdminPassword();
+  document.getElementById('adminPasswordError').style.display = 'none';
+}
+
+// ============================================================
 // TAB NAVIGATION
 // ============================================================
 function showTab(name) {
@@ -1153,6 +1197,13 @@ function showTab(name) {
   document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-' + name).style.display = '';
   event.target.classList.add('active');
+  if (name !== 'admin') {
+    adminUnlocked = false;
+    document.getElementById('adminLock').style.display = '';
+    document.getElementById('adminContent').style.display = 'none';
+    document.getElementById('adminPasswordInput').value = '';
+    document.getElementById('adminPasswordError').style.display = 'none';
+  }
 }
 
 // ============================================================
