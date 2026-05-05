@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BabyBjörns VM-Tips 2026 🏆</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --gold: #f5c542;
+    --gold2: #e0a800;
+    --green: #22c55e;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --muted: #4b5e7a;
+    --text: #e8edf5;
+    --text2: #8fa3be;
+    --accent: #f5c542;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% -10%, rgba(245,197,66,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 110%, rgba(59,130,246,0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+
+  /* Header */
+  header {
+    padding: 40px 0 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .header-inner { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  .header-title { display: flex; align-items: center; gap: 16px; }
+  .trophy { font-size: 52px; line-height: 1; filter: drop-shadow(0 0 20px rgba(245,197,66,0.4)); }
+  .title-block h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 6vw, 64px);
+    letter-spacing: 3px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .title-block p {
+    color: var(--text2);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .header-meta {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .meta-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text2);
+  }
+  .meta-chip span { color: var(--gold); font-weight: 500; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 28px;
+    width: fit-content;
+  }
+  .tab {
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .tab.active {
+    background: var(--gold);
+    color: #0a0e1a;
+  }
+  .tab:hover:not(.active) { color: var(--text); background: var(--surface2); }
+
+  /* Leaderboard */
+  .leaderboard { display: flex; flex-direction: column; gap: 8px; }
+
+  .player-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: grid;
+    grid-template-columns: 44px 1fr auto auto auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    transition: border-color 0.2s, transform 0.15s;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+  .player-row::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: transparent;
+    border-radius: 12px 0 0 12px;
+    transition: background 0.2s;
+  }
+  .player-row:hover { border-color: var(--muted); transform: translateX(2px); }
+  .player-row.rank-1::before { background: var(--gold); }
+  .player-row.rank-2::before { background: #b0b8c8; }
+  .player-row.rank-3::before { background: #c87941; }
+  .player-row.rank-1 { border-color: rgba(245,197,66,0.2); background: linear-gradient(135deg, rgba(245,197,66,0.05) 0%, var(--surface) 60%); }
+
+  .rank-badge {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    background: var(--surface2);
+    color: var(--text2);
+    flex-shrink: 0;
+  }
+  .rank-1 .rank-badge { background: rgba(245,197,66,0.15); color: var(--gold); }
+  .rank-2 .rank-badge { background: rgba(176,184,200,0.15); color: #b0b8c8; }
+  .rank-3 .rank-badge { background: rgba(200,121,65,0.15); color: #c87941; }
+
+  .player-name { font-weight: 600; font-size: 16px; }
+
+  .player-sparkline {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 28px;
+  }
+  .spark-bar {
+    width: 6px;
+    border-radius: 3px 3px 0 0;
+    background: var(--muted);
+    transition: background 0.2s;
+    min-height: 3px;
+  }
+  .spark-bar.hot { background: var(--green); }
+  .spark-bar.cold { background: var(--muted); }
+
+  .trend-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+  .trend-up { background: rgba(34,197,94,0.12); color: var(--green); }
+  .trend-down { background: rgba(239,68,68,0.1); color: var(--red); }
+  .trend-neutral { background: var(--surface2); color: var(--text2); }
+
+  .player-points {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--text);
+    text-align: right;
+    min-width: 52px;
+  }
+  .rank-1 .player-points { color: var(--gold); }
+
+  .player-acc {
+    font-size: 12px;
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+    text-align: right;
+    min-width: 46px;
+  }
+
+  /* Stats panel */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .stat-card-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text2);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .stat-highlight {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .stat-sub { font-size: 13px; color: var(--text2); }
+
+  .progress-bar {
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--gold2), var(--gold));
+    transition: width 0.6s ease;
+  }
+
+  /* Round breakdown */
+  .round-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .round-table-header {
+    display: grid;
+    padding: 12px 20px;
+    background: var(--surface2);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text2);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+  .round-table-row {
+    display: grid;
+    padding: 12px 20px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    transition: background 0.15s;
+  }
+  .round-table-row:last-child { border-bottom: none; }
+  .round-table-row:hover { background: rgba(255,255,255,0.02); }
+  .pts-cell { font-family: 'DM Mono', monospace; font-weight: 500; }
+  .pts-hot { color: var(--green); }
+
+  /* Matches view */
+  .matches-section { margin-bottom: 28px; }
+  .group-header {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    padding: 16px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .group-header::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .matches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .match-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+  }
+  .match-meta {
+    font-size: 10px;
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .match-teams {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .match-vs {
+    color: var(--text2);
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    flex-shrink: 0;
+  }
+  .match-team { flex: 1; }
+  .match-team.away { text-align: right; }
+  .result-badge {
+    margin-top: 8px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .result-btn {
+    flex: 1;
+    padding: 5px 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text2);
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .result-btn:hover { border-color: var(--muted); color: var(--text); }
+  .result-btn.set-1 { border-color: var(--green); color: var(--green); background: rgba(34,197,94,0.08); }
+  .result-btn.set-x { border-color: var(--gold); color: var(--gold); background: rgba(245,197,66,0.08); }
+  .result-btn.set-2 { border-color: var(--blue); color: var(--blue); background: rgba(59,130,246,0.08); }
+
+  /* Admin bar */
+  .admin-bar {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .admin-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    font-weight: 600;
+  }
+  .admin-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--gold); color: #0a0e1a; }
+  .btn-primary:hover { background: var(--gold2); transform: translateY(-1px); }
+  .btn-ghost { background: var(--surface); border: 1px solid var(--border); color: var(--text2); }
+  .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+  }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    max-width: 540px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .modal h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text2);
+    margin-bottom: 6px;
+  }
+  .form-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus { border-color: var(--gold); }
+  .form-input::placeholder { color: var(--muted); }
+  .tips-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .tip-row {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .tip-match-name { font-size: 11px; color: var(--text2); font-weight: 500; }
+  .tip-btns { display: flex; gap: 4px; }
+  .tip-btn {
+    flex: 1;
+    padding: 4px 0;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text2);
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+    transition: all 0.1s;
+    text-align: center;
+  }
+  .tip-btn.sel-1 { border-color: var(--green); color: var(--green); background: rgba(34,197,94,0.1); }
+  .tip-btn.sel-x { border-color: var(--gold); color: var(--gold); background: rgba(245,197,66,0.1); }
+  .tip-btn.sel-2 { border-color: var(--blue); color: var(--blue); background: rgba(59,130,246,0.1); }
+  .modal-footer { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+
+  /* Chart */
+  .chart-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 28px;
+  }
+  .chart-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text2);
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .chart-svg { width: 100%; overflow: visible; }
+
+  /* Round selector */
+  .round-selector {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .round-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text2);
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .round-btn.active { background: var(--gold); color: #0a0e1a; border-color: var(--gold); font-weight: 600; }
+  .round-btn:hover:not(.active) { border-color: var(--muted); color: var(--text); }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 20px 0 32px;
+    margin-top: 40px;
+    color: var(--muted);
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn 0.3s ease forwards; }
+
+  @media (max-width: 640px) {
+    .player-row { grid-template-columns: 36px 1fr auto auto; }
+    .player-sparkline { display: none; }
+    .trend-badge { display: none; }
+    .tips-grid { grid-template-columns: 1fr; }
+    .round-table-header, .round-table-row { grid-template-columns: 1fr repeat(3, auto) !important; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-inner">
+      <div class="header-title">
+        <div class="trophy">🏆</div>
+        <div class="title-block">
+          <h1>BABYBJÖRNS VM-TIPS</h1>
+          <p>FIFA World Cup · Gruppspel · 1X2</p>
+        </div>
+      </div>
+      <div class="header-meta">
+        <div class="meta-chip" id="matchCount">Matcher: <span>0/72</span></div>
+        <div class="meta-chip" id="playerCount">Deltagare: <span>0</span></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('leaderboard')">🏅 Topplista</button>
+    <button class="tab" onclick="showTab('analysis')">📊 Analys</button>
+    <button class="tab" onclick="showTab('matches')">⚽ Matcher & Facit</button>
+    <button class="tab" onclick="showTab('admin')">⚙️ Admin</button>
+  </div>
+
+  <!-- LEADERBOARD TAB -->
+  <div id="tab-leaderboard" class="tab-content fade-in">
+    <div class="leaderboard" id="leaderboardList"></div>
+    <p id="emptyMsg" style="color:var(--text2);text-align:center;padding:40px;display:none">Inga deltagare ännu. Gå till Admin för att lägga till.</p>
+  </div>
+
+  <!-- ANALYSIS TAB -->
+  <div id="tab-analysis" class="tab-content fade-in" style="display:none">
+    <div class="stats-grid" id="statsGrid"></div>
+    <div class="chart-wrap">
+      <div class="chart-title">⚡ Poängutveckling per omgång</div>
+      <div id="lineChart"></div>
+    </div>
+    <div class="round-table">
+      <div class="round-table-header" id="roundTableHeader"></div>
+      <div id="roundTableBody"></div>
+    </div>
+  </div>
+
+  <!-- MATCHES TAB -->
+  <div id="tab-matches" class="tab-content fade-in" style="display:none">
+    <div class="round-selector" id="roundSelector"></div>
+    <div id="matchesContent"></div>
+  </div>
+
+  <!-- ADMIN TAB -->
+  <div id="tab-admin" class="tab-content fade-in" style="display:none">
+    <div class="admin-bar">
+      <div>
+        <div class="admin-label">⚙️ Adminpanel</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:2px">Lägg till deltagare och deras tips. Sätt matchresultat för automatisk rättning.</div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn btn-primary" onclick="openAddPlayer()">+ Lägg till deltagare</button>
+        <button class="btn btn-ghost" onclick="exportData()">⬇ Exportera JSON</button>
+        <button class="btn btn-ghost" onclick="importTrigger()">⬆ Importera JSON</button>
+        <button class="btn btn-ghost" onclick="resetData()" style="color:var(--red)">🗑 Rensa allt</button>
+      </div>
+    </div>
+    <div id="adminPlayerList"></div>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)" />
+  </div>
+
+</div><!-- end container -->
+
+<!-- Modal: Add/Edit Player -->
+<div class="modal-overlay" id="playerModal" style="display:none" onclick="closeModalOutside(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h2 id="modalTitle">Lägg till deltagare</h2>
+    <div class="form-group">
+      <label>Namn</label>
+      <input class="form-input" id="playerNameInput" placeholder="T.ex. Erik Johansson" />
+    </div>
+    <div class="form-group">
+      <label>Tips — välj 1, X eller 2 för varje match</label>
+      <div class="tips-grid" id="tipsGrid"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Avbryt</button>
+      <button class="btn btn-primary" onclick="savePlayer()">Spara</button>
+    </div>
+  </div>
+</div>
+
+<footer class="container">
+  <span>VM-Tips 2026 · Intern tävling</span>
+  <span style="font-family:'DM Mono',monospace" id="lastUpdated"></span>
+</footer>
+
+<script>
+// ============================================================
+// DATA — All 72 group stage matches
+// ============================================================
+const MATCHES = [
+  // GROUP A
+  { id:'A1', group:'A', r:1, home:'Mexiko',       away:'Sydafrika',          date:'11 jun' },
+  { id:'A2', group:'A', r:1, home:'Sydkorea',     away:'Tjeckien',           date:'11 jun' },
+  { id:'A3', group:'A', r:2, home:'Tjeckien',     away:'Sydafrika',          date:'18 jun' },
+  { id:'A4', group:'A', r:2, home:'Mexiko',       away:'Sydkorea',           date:'18 jun' },
+  { id:'A5', group:'A', r:3, home:'Tjeckien',     away:'Mexiko',             date:'24 jun' },
+  { id:'A6', group:'A', r:3, home:'Sydafrika',    away:'Sydkorea',           date:'24 jun' },
+  // GROUP B
+  { id:'B1', group:'B', r:1, home:'Kanada',       away:'Bosnien',            date:'12 jun' },
+  { id:'B2', group:'B', r:1, home:'Qatar',        away:'Schweiz',            date:'13 jun' },
+  { id:'B3', group:'B', r:2, home:'Schweiz',      away:'Bosnien',            date:'18 jun' },
+  { id:'B4', group:'B', r:2, home:'Kanada',       away:'Qatar',              date:'18 jun' },
+  { id:'B5', group:'B', r:3, home:'Schweiz',      away:'Kanada',             date:'24 jun' },
+  { id:'B6', group:'B', r:3, home:'Bosnien',      away:'Qatar',              date:'24 jun' },
+  // GROUP C
+  { id:'C1', group:'C', r:1, home:'Brasilien',    away:'Marocko',            date:'13 jun' },
+  { id:'C2', group:'C', r:1, home:'Haiti',        away:'Skottland',          date:'13 jun' },
+  { id:'C3', group:'C', r:2, home:'Skottland',    away:'Marocko',            date:'19 jun' },
+  { id:'C4', group:'C', r:2, home:'Brasilien',    away:'Haiti',              date:'19 jun' },
+  { id:'C5', group:'C', r:3, home:'Skottland',    away:'Brasilien',          date:'24 jun' },
+  { id:'C6', group:'C', r:3, home:'Marocko',      away:'Haiti',              date:'24 jun' },
+  // GROUP D
+  { id:'D1', group:'D', r:1, home:'USA',          away:'Paraguay',           date:'12 jun' },
+  { id:'D2', group:'D', r:1, home:'Australien',   away:'Turkiet',            date:'13 jun' },
+  { id:'D3', group:'D', r:2, home:'USA',          away:'Australien',         date:'19 jun' },
+  { id:'D4', group:'D', r:2, home:'Turkiet',      away:'Paraguay',           date:'19 jun' },
+  { id:'D5', group:'D', r:3, home:'USA',          away:'Turkiet',            date:'25 jun' },
+  { id:'D6', group:'D', r:3, home:'Paraguay',     away:'Australien',         date:'25 jun' },
+  // GROUP E
+  { id:'E1', group:'E', r:1, home:'Tyskland',     away:'Curaçao',            date:'14 jun' },
+  { id:'E2', group:'E', r:1, home:'Elfenbenskusten', away:'Ecuador',         date:'14 jun' },
+  { id:'E3', group:'E', r:2, home:'Tyskland',     away:'Elfenbenskusten',    date:'20 jun' },
+  { id:'E4', group:'E', r:2, home:'Ecuador',      away:'Curaçao',            date:'20 jun' },
+  { id:'E5', group:'E', r:3, home:'Tyskland',     away:'Ecuador',            date:'25 jun' },
+  { id:'E6', group:'E', r:3, home:'Elfenbenskusten', away:'Curaçao',         date:'25 jun' },
+  // GROUP F
+  { id:'F1', group:'F', r:1, home:'Nederländerna', away:'Japan',             date:'14 jun' },
+  { id:'F2', group:'F', r:1, home:'Tunisien',     away:'Sverige',            date:'14 jun' },
+  { id:'F3', group:'F', r:2, home:'Japan',        away:'Sverige',            date:'20 jun' },
+  { id:'F4', group:'F', r:2, home:'Nederländerna', away:'Tunisien',          date:'20 jun' },
+  { id:'F5', group:'F', r:3, home:'Japan',        away:'Nederländerna',      date:'25 jun' },
+  { id:'F6', group:'F', r:3, home:'Sverige',      away:'Tunisien',           date:'25 jun' },
+  // GROUP G
+  { id:'G1', group:'G', r:1, home:'Belgien',      away:'Egypten',            date:'15 jun' },
+  { id:'G2', group:'G', r:1, home:'Iran',         away:'Nya Zeeland',        date:'15 jun' },
+  { id:'G3', group:'G', r:2, home:'Belgien',      away:'Iran',               date:'21 jun' },
+  { id:'G4', group:'G', r:2, home:'Nya Zeeland',  away:'Egypten',            date:'21 jun' },
+  { id:'G5', group:'G', r:3, home:'Belgien',      away:'Nya Zeeland',        date:'26 jun' },
+  { id:'G6', group:'G', r:3, home:'Egypten',      away:'Iran',               date:'26 jun' },
+  // GROUP H
+  { id:'H1', group:'H', r:1, home:'Spanien',      away:'Kap Verde',          date:'15 jun' },
+  { id:'H2', group:'H', r:1, home:'Saudiarabien', away:'Uruguay',            date:'15 jun' },
+  { id:'H3', group:'H', r:2, home:'Spanien',      away:'Saudiarabien',       date:'21 jun' },
+  { id:'H4', group:'H', r:2, home:'Uruguay',      away:'Kap Verde',          date:'21 jun' },
+  { id:'H5', group:'H', r:3, home:'Spanien',      away:'Uruguay',            date:'26 jun' },
+  { id:'H6', group:'H', r:3, home:'Kap Verde',    away:'Saudiarabien',       date:'26 jun' },
+  // GROUP I
+  { id:'I1', group:'I', r:1, home:'Frankrike',    away:'Senegal',            date:'16 jun' },
+  { id:'I2', group:'I', r:1, home:'Irak',         away:'Norge',              date:'16 jun' },
+  { id:'I3', group:'I', r:2, home:'Frankrike',    away:'Irak',               date:'22 jun' },
+  { id:'I4', group:'I', r:2, home:'Norge',        away:'Senegal',            date:'22 jun' },
+  { id:'I5', group:'I', r:3, home:'Frankrike',    away:'Norge',              date:'26 jun' },
+  { id:'I6', group:'I', r:3, home:'Senegal',      away:'Irak',               date:'26 jun' },
+  // GROUP J
+  { id:'J1', group:'J', r:1, home:'Argentina',    away:'Algeriet',           date:'16 jun' },
+  { id:'J2', group:'J', r:1, home:'Österrike',    away:'Jordanien',          date:'16 jun' },
+  { id:'J3', group:'J', r:2, home:'Argentina',    away:'Österrike',          date:'22 jun' },
+  { id:'J4', group:'J', r:2, home:'Jordanien',    away:'Algeriet',           date:'22 jun' },
+  { id:'J5', group:'J', r:3, home:'Jordanien',    away:'Argentina',          date:'27 jun' },
+  { id:'J6', group:'J', r:3, home:'Algeriet',     away:'Österrike',          date:'27 jun' },
+  // GROUP K
+  { id:'K1', group:'K', r:1, home:'Portugal',     away:'DR Kongo',           date:'17 jun' },
+  { id:'K2', group:'K', r:1, home:'Uzbekistan',   away:'Colombia',           date:'17 jun' },
+  { id:'K3', group:'K', r:2, home:'Portugal',     away:'Uzbekistan',         date:'23 jun' },
+  { id:'K4', group:'K', r:2, home:'Colombia',     away:'DR Kongo',           date:'23 jun' },
+  { id:'K5', group:'K', r:3, home:'Colombia',     away:'Portugal',           date:'27 jun' },
+  { id:'K6', group:'K', r:3, home:'DR Kongo',     away:'Uzbekistan',         date:'27 jun' },
+  // GROUP L
+  { id:'L1', group:'L', r:1, home:'England',      away:'Kroatien',           date:'17 jun' },
+  { id:'L2', group:'L', r:1, home:'Ghana',        away:'Panama',             date:'17 jun' },
+  { id:'L3', group:'L', r:2, home:'England',      away:'Ghana',              date:'23 jun' },
+  { id:'L4', group:'L', r:2, home:'Panama',       away:'Kroatien',           date:'23 jun' },
+  { id:'L5', group:'L', r:3, home:'Panama',       away:'England',            date:'27 jun' },
+  { id:'L6', group:'L', r:3, home:'Kroatien',     away:'Ghana',              date:'27 jun' },
+];
+
+const ROUNDS = [1, 2, 3];
+const GROUPS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  players: [],   // { id, name, tips: { matchId: '1'|'X'|'2' } }
+  results: {},   // { matchId: '1'|'X'|'2' }
+  lastUpdated: new Date().toISOString()
+};
+
+function loadState() {
+  try {
+    const s = localStorage.getItem('vmtips2026');
+    if (s) state = JSON.parse(s);
+  } catch(e) {}
+}
+
+function saveState() {
+  state.lastUpdated = new Date().toISOString();
+  localStorage.setItem('vmtips2026', JSON.stringify(state));
+  render();
+}
+
+// ============================================================
+// SCORING
+// ============================================================
+function getPlayerScore(player) {
+  let total = 0, byRound = [0,0,0], correct = 0, played = 0;
+  MATCHES.forEach(m => {
+    const res = state.results[m.id];
+    const tip = player.tips[m.id];
+    if (res) { played++; if (tip === res) { total += 3; byRound[m.r-1] += 3; correct++; } }
+  });
+  return { total, byRound, correct, played, acc: played ? Math.round(correct/played*100) : 0 };
+}
+
+function getRankedPlayers() {
+  return state.players
+    .map(p => ({ ...p, score: getPlayerScore(p) }))
+    .sort((a,b) => b.score.total - a.score.total);
+}
+
+function getMatchesPlayed() {
+  return MATCHES.filter(m => state.results[m.id]).length;
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function render() {
+  const played = getMatchesPlayed();
+  document.getElementById('matchCount').innerHTML = `Matcher: <span>${played}/72</span>`;
+  document.getElementById('playerCount').innerHTML = `Deltagare: <span>${state.players.length}</span>`;
+
+  const ts = state.lastUpdated ? new Date(state.lastUpdated).toLocaleString('sv-SE') : '';
+  document.getElementById('lastUpdated').textContent = 'Uppdaterad: ' + ts;
+
+  renderLeaderboard();
+  renderAnalysis();
+  renderMatches();
+  renderAdmin();
+}
+
+function renderLeaderboard() {
+  const ranked = getRankedPlayers();
+  const list = document.getElementById('leaderboardList');
+  const empty = document.getElementById('emptyMsg');
+  if (!ranked.length) { list.innerHTML = ''; empty.style.display = ''; return; }
+  empty.style.display = 'none';
+
+  list.innerHTML = ranked.map((p, i) => {
+    const rank = i + 1;
+    const { total, byRound, acc } = p.score;
+    const lastRound = byRound[byRound.length-1];
+    const prevRound = byRound[byRound.length-2] ?? 0;
+    const trend = lastRound > prevRound ? 'up' : lastRound < prevRound ? 'down' : 'neutral';
+    const trendIcon = trend === 'up' ? '▲' : trend === 'down' ? '▼' : '–';
+    const trendClass = `trend-${trend}`;
+    const maxBar = 9;
+    const sparks = byRound.map(v => {
+      const h = Math.max(3, Math.round((v/maxBar)*28));
+      const cls = v >= 6 ? 'hot' : 'cold';
+      return `<div class="spark-bar ${cls}" style="height:${h}px"></div>`;
+    }).join('');
+
+    return `<div class="player-row rank-${rank <= 3 ? rank : ''} fade-in" style="animation-delay:${i*0.04}s">
+      <div class="rank-badge">${rank <= 3 ? ['🥇','🥈','🥉'][rank-1] : rank}</div>
+      <div class="player-name">${p.name}</div>
+      <div class="player-sparkline">${sparks}</div>
+      <div class="trend-badge ${trendClass}">${trendIcon} R${ROUNDS.length}</div>
+      <div class="player-acc">${acc}%</div>
+      <div class="player-points">${total}p</div>
+    </div>`;
+  }).join('');
+}
+
+function renderAnalysis() {
+  const ranked = getRankedPlayers();
+  if (!ranked.length) {
+    document.getElementById('statsGrid').innerHTML = '<p style="color:var(--text2)">Inga data ännu.</p>';
+    document.getElementById('lineChart').innerHTML = '';
+    document.getElementById('roundTableBody').innerHTML = '';
+    return;
+  }
+
+  const played = getMatchesPlayed();
+  const leader = ranked[0];
+
+  // Stats cards
+  const hotPlayer = [...ranked].sort((a,b) => (b.score.byRound[2]||0) - (a.score.byRound[2]||0))[0];
+  const streakPlayer = ranked.reduce((best, p) => {
+    let streak = 0, max = 0;
+    MATCHES.forEach(m => {
+      const res = state.results[m.id];
+      if (res && p.tips[m.id] === res) { streak++; max = Math.max(max, streak); } else { streak = 0; }
+    });
+    return max > (best.streak||0) ? { ...p, streak: max } : best;
+  }, {});
+  const xKing = [...ranked].sort((a,b) => {
+    const bx = MATCHES.filter(m => b.tips[m.id]==='X').length;
+    const ax = MATCHES.filter(m => a.tips[m.id]==='X').length;
+    return bx - ax;
+  })[0];
+
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-card-title">🏆 Ledare</div>
+      <div class="stat-highlight">${leader.name.split(' ')[0]}</div>
+      <div class="stat-sub">${leader.score.total} poäng · ${leader.score.acc}% träffsäkerhet</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${leader.score.acc}%"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-title">🔥 Trendar just nu</div>
+      <div class="stat-highlight">${hotPlayer?.name?.split(' ')[0] || '–'}</div>
+      <div class="stat-sub">${hotPlayer?.score?.byRound[2] ?? 0}p i senaste omgången</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-title">⚡ Bästa streak</div>
+      <div class="stat-highlight">${streakPlayer?.streak ?? 0} rätt</div>
+      <div class="stat-sub">${streakPlayer?.name || '–'}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-title">✖ X-kungen</div>
+      <div class="stat-highlight">${xKing?.name?.split(' ')[0] || '–'}</div>
+      <div class="stat-sub">${MATCHES.filter(m => xKing?.tips?.[m.id]==='X').length} X-tips totalt</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-title">⚽ Matcher spelade</div>
+      <div class="stat-highlight">${played} / 72</div>
+      <div class="stat-sub">Gruppspelet pågår</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${Math.round(played/72*100)}%"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-title">👥 Deltagare</div>
+      <div class="stat-highlight">${state.players.length}</div>
+      <div class="stat-sub">Genomsnitt: ${ranked.length ? Math.round(ranked.reduce((s,p)=>s+p.score.total,0)/ranked.length) : 0}p</div>
+    </div>
+  `;
+
+  // Line chart
+  renderLineChart(ranked);
+
+  // Round breakdown table
+  const colStyle = `grid-template-columns: 1fr repeat(${ranked.length}, 60px)`;
+  document.getElementById('roundTableHeader').style.cssText = colStyle;
+  document.getElementById('roundTableHeader').innerHTML =
+    `<div>Omgång</div>` + ranked.map(p => `<div style="text-align:right;font-size:10px">${p.name.split(' ')[0]}</div>`).join('');
+
+  document.getElementById('roundTableBody').innerHTML = ROUNDS.map(r => {
+    const cells = ranked.map(p => {
+      const pts = p.score.byRound[r-1];
+      const isMax = pts === Math.max(...ranked.map(x => x.score.byRound[r-1]));
+      return `<div class="pts-cell ${isMax && pts > 0 ? 'pts-hot':''}" style="text-align:right">${pts}p</div>`;
+    }).join('');
+    return `<div class="round-table-row" style="${colStyle}"><div>Omgång ${r}</div>${cells}</div>`;
+  }).join('') +
+  `<div class="round-table-row" style="${colStyle};background:rgba(245,197,66,0.04)">
+    <div style="font-weight:600;color:var(--gold)">TOTALT</div>
+    ${ranked.map(p => `<div class="pts-cell" style="text-align:right;color:var(--gold);font-weight:600">${p.score.total}p</div>`).join('')}
+  </div>`;
+}
+
+function renderLineChart(ranked) {
+  const colors = ['#f5c542','#3b82f6','#22c55e','#ef4444','#a855f7','#f97316','#06b6d4','#ec4899'];
+  const w = 700, h = 180, pad = { t:10, r:20, b:30, l:32 };
+  const chartW = w - pad.l - pad.r;
+  const chartH = h - pad.t - pad.b;
+  const rounds = [0, 1, 2, 3]; // 0 = start
+
+  const maxPts = Math.max(9, ...ranked.map(p => p.score.total));
+
+  const x = i => pad.l + (i / 3) * chartW;
+  const y = v => pad.t + chartH - (v / maxPts) * chartH;
+
+  const lines = ranked.map((p, i) => {
+    const cumul = [0];
+    let acc = 0;
+    for (let r = 0; r < 3; r++) { acc += p.score.byRound[r]; cumul.push(acc); }
+    const pts = rounds.map((r, ri) => `${x(ri)},${y(cumul[ri])}`).join(' ');
+    const dots = rounds.map((r, ri) =>
+      `<circle cx="${x(ri)}" cy="${y(cumul[ri])}" r="4" fill="${colors[i % colors.length]}" />`
+    ).join('');
+    return `
+      <polyline points="${pts}" fill="none" stroke="${colors[i%colors.length]}" stroke-width="2.5" stroke-linejoin="round" opacity="0.85" />
+      ${dots}
+      <text x="${x(3)+5}" y="${y(cumul[3])+4}" font-size="11" fill="${colors[i%colors.length]}" font-family="DM Sans">${p.name.split(' ')[0]}</text>
+    `;
+  }).join('');
+
+  const xLabels = ['Start','R1','R2','R3'].map((l, i) =>
+    `<text x="${x(i)}" y="${h - 2}" font-size="10" fill="#4b5e7a" text-anchor="middle" font-family="DM Mono">${l}</text>`
+  ).join('');
+
+  const gridLines = [0, 0.25, 0.5, 0.75, 1].map(f => {
+    const yv = y(f * maxPts);
+    return `<line x1="${pad.l}" y1="${yv}" x2="${w - pad.r}" y2="${yv}" stroke="#1e2d45" stroke-width="1" />
+            <text x="${pad.l - 4}" y="${yv + 3}" font-size="9" fill="#4b5e7a" text-anchor="end" font-family="DM Mono">${Math.round(f*maxPts)}</text>`;
+  }).join('');
+
+  document.getElementById('lineChart').innerHTML = `
+    <svg viewBox="0 0 ${w} ${h}" class="chart-svg">
+      ${gridLines}
+      ${lines}
+      ${xLabels}
+    </svg>`;
+}
+
+let selectedMatchRound = 1;
+
+function renderMatches() {
+  // Round selector
+  const sel = document.getElementById('roundSelector');
+  sel.innerHTML = ROUNDS.map(r =>
+    `<button class="round-btn ${r === selectedMatchRound ? 'active' : ''}" onclick="selectRound(${r})">Omgång ${r}</button>`
+  ).join('');
+
+  const cont = document.getElementById('matchesContent');
+  cont.innerHTML = GROUPS.map(g => {
+    const matches = MATCHES.filter(m => m.group === g && m.r === selectedMatchRound);
+    if (!matches.length) return '';
+    const cards = matches.map(m => {
+      const res = state.results[m.id];
+      const btn1 = `result-btn${res === '1' ? ' set-1' : ''}`;
+      const btnX = `result-btn${res === 'X' ? ' set-x' : ''}`;
+      const btn2 = `result-btn${res === '2' ? ' set-2' : ''}`;
+      return `<div class="match-card">
+        <div class="match-meta"><span>${m.date}</span><span>#${m.id}</span></div>
+        <div class="match-teams">
+          <span class="match-team">${m.home}</span>
+          <span class="match-vs">vs</span>
+          <span class="match-team away">${m.away}</span>
+        </div>
+        <div class="result-badge">
+          <button class="${btn1}" onclick="setResult('${m.id}','1')">1</button>
+          <button class="${btnX}" onclick="setResult('${m.id}','X')">X</button>
+          <button class="${btn2}" onclick="setResult('${m.id}','2')">2</button>
+        </div>
+      </div>`;
+    }).join('');
+    return `<div class="matches-section">
+      <div class="group-header">Grupp ${g}</div>
+      <div class="matches-grid">${cards}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectRound(r) { selectedMatchRound = r; renderMatches(); }
+
+function setResult(matchId, val) {
+  if (state.results[matchId] === val) { delete state.results[matchId]; }
+  else { state.results[matchId] = val; }
+  saveState();
+}
+
+function renderAdmin() {
+  const list = document.getElementById('adminPlayerList');
+  if (!state.players.length) {
+    list.innerHTML = '<p style="color:var(--text2);padding:20px 0">Inga deltagare ännu.</p>';
+    return;
+  }
+  list.innerHTML = state.players.map(p => {
+    const score = getPlayerScore(p);
+    const tipsCount = Object.keys(p.tips).length;
+    return `<div class="player-row" style="margin-bottom:8px">
+      <div class="rank-badge" style="font-size:13px">👤</div>
+      <div>
+        <div class="player-name">${p.name}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px">${tipsCount}/72 tips inlagda · ${score.total}p</div>
+      </div>
+      <div style="flex:1"></div>
+      <button class="btn btn-ghost" onclick="editPlayer('${p.id}')" style="padding:6px 12px;font-size:12px">✏️ Redigera</button>
+      <button class="btn btn-ghost" onclick="deletePlayer('${p.id}')" style="padding:6px 12px;font-size:12px;color:var(--red)">🗑</button>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// MODAL / PLAYER MANAGEMENT
+// ============================================================
+let editingPlayerId = null;
+let tempTips = {};
+
+function openAddPlayer() {
+  editingPlayerId = null;
+  tempTips = {};
+  document.getElementById('playerNameInput').value = '';
+  document.getElementById('modalTitle').textContent = 'Lägg till deltagare';
+  buildTipsGrid();
+  document.getElementById('playerModal').style.display = 'flex';
+}
+
+function editPlayer(id) {
+  const p = state.players.find(x => x.id === id);
+  if (!p) return;
+  editingPlayerId = id;
+  tempTips = { ...p.tips };
+  document.getElementById('playerNameInput').value = p.name;
+  document.getElementById('modalTitle').textContent = 'Redigera: ' + p.name;
+  buildTipsGrid();
+  document.getElementById('playerModal').style.display = 'flex';
+}
+
+function buildTipsGrid() {
+  const grid = document.getElementById('tipsGrid');
+  grid.innerHTML = MATCHES.map(m => {
+    const cur = tempTips[m.id] || '';
+    return `<div class="tip-row">
+      <div class="tip-match-name">${m.home} – ${m.away} <span style="color:var(--muted)">(${m.date})</span></div>
+      <div class="tip-btns">
+        <button class="tip-btn ${cur==='1'?'sel-1':''}" onclick="setTip('${m.id}','1')">1</button>
+        <button class="tip-btn ${cur==='X'?'sel-x':''}" onclick="setTip('${m.id}','X')">X</button>
+        <button class="tip-btn ${cur==='2'?'sel-2':''}" onclick="setTip('${m.id}','2')">2</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setTip(matchId, val) {
+  if (tempTips[matchId] === val) { delete tempTips[matchId]; }
+  else { tempTips[matchId] = val; }
+  buildTipsGrid();
+}
+
+function savePlayer() {
+  const name = document.getElementById('playerNameInput').value.trim();
+  if (!name) { alert('Ange ett namn.'); return; }
+  if (editingPlayerId) {
+    const p = state.players.find(x => x.id === editingPlayerId);
+    if (p) { p.name = name; p.tips = { ...tempTips }; }
+  } else {
+    state.players.push({ id: Date.now().toString(), name, tips: { ...tempTips } });
+  }
+  closeModal();
+  saveState();
+}
+
+function deletePlayer(id) {
+  if (!confirm('Ta bort deltagaren?')) return;
+  state.players = state.players.filter(p => p.id !== id);
+  saveState();
+}
+
+function closeModal() { document.getElementById('playerModal').style.display = 'none'; }
+function closeModalOutside(e) { if (e.target === document.getElementById('playerModal')) closeModal(); }
+
+// ============================================================
+// IMPORT / EXPORT
+// ============================================================
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'vmtips2026.json';
+  a.click();
+}
+
+function importTrigger() { document.getElementById('importFile').click(); }
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.players && data.results) {
+        state = data;
+        saveState();
+        alert('Data importerad!');
+      } else { alert('Ogiltigt format.'); }
+    } catch { alert('Kunde inte läsa filen.'); }
+  };
+  reader.readAsText(file);
+}
+
+function resetData() {
+  if (!confirm('Rensa ALL data? Detta går inte att ångra.')) return;
+  state = { players: [], results: {}, lastUpdated: new Date().toISOString() };
+  saveState();
+}
+
+// ============================================================
+// TAB NAVIGATION
+// ============================================================
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + name).style.display = '';
+  event.target.classList.add('active');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadState();
+render();
+</script>
+</body>
+</html>
