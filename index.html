@@ -805,6 +805,26 @@ const MATCHES = [
 const ROUNDS = [1, 2, 3];
 const GROUPS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 
+
+// ============================================================
+// LOAD PLAYERS FROM GitHub players.json
+// ============================================================
+async function loadPlayersFromGitHub() {
+  try {
+    const res = await fetch('players.json?t=' + Date.now());
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.players && Array.isArray(data.players)) {
+      // Merge: keep existing results, replace players
+      state.players = data.players;
+      localStorage.setItem('vmtips2026', JSON.stringify(state));
+      render();
+    }
+  } catch(e) {
+    // players.json doesn't exist yet, that's fine
+  }
+}
+
 // ============================================================
 // STATE
 // ============================================================
@@ -1347,7 +1367,9 @@ function showTab(name) {
 // INIT
 // ============================================================
 loadState();
-render();
+loadPlayersFromGitHub().then(() => render());
+// Refresh every 2 minutes
+setInterval(() => loadPlayersFromGitHub().then(() => render()), 120000);
 </script>
 </body>
 </html>
