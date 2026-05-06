@@ -7,19 +7,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg: #0a0e1a;
-    --surface: #111827;
-    --surface2: #1a2235;
-    --border: #1e2d45;
-    --gold: #f5c542;
-    --gold2: #e0a800;
-    --green: #22c55e;
-    --red: #ef4444;
-    --blue: #3b82f6;
-    --muted: #4b5e7a;
-    --text: #e8edf5;
-    --text2: #8fa3be;
-    --accent: #f5c542;
+    --bg: #5e3d45;
+    --surface: #4C4D4C;
+    --surface2: #3a2e32;
+    --border: #7a5560;
+    --gold: #e9cabc;
+    --gold2: #cd867d;
+    --green: #c8a898;
+    --red: #cd867d;
+    --blue: #e9cabc;
+    --muted: #9e8880;
+    --text: #f5ede5;
+    --text2: #CCC4BE;
+    --accent: #e9cabc;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -38,8 +38,8 @@
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(ellipse 80% 50% at 20% -10%, rgba(245,197,66,0.07) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 80% 110%, rgba(59,130,246,0.05) 0%, transparent 60%);
+      radial-gradient(ellipse 80% 50% at 20% -10%, rgba(233,202,188,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 110%, rgba(94,61,69,0.3) 0%, transparent 60%);
     pointer-events: none;
     z-index: 0;
   }
@@ -54,11 +54,13 @@
   }
   .header-inner { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
   .header-title { display: flex; align-items: center; gap: 16px; }
-  .trophy { font-size: 52px; line-height: 1; filter: drop-shadow(0 0 20px rgba(245,197,66,0.4)); }
+  .trophy { font-size: 52px; line-height: 1; filter: drop-shadow(0 0 20px rgba(233,202,188,0.5)); }
   .title-block h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(36px, 6vw, 64px);
-    letter-spacing: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 52px);
+    letter-spacing: 6px;
+    text-transform: uppercase;
     color: var(--gold);
     line-height: 1;
   }
@@ -112,7 +114,7 @@
   }
   .tab.active {
     background: var(--gold);
-    color: #0a0e1a;
+    color: #5e3d45;
   }
   .tab:hover:not(.active) { color: var(--text); background: var(--surface2); }
 
@@ -146,7 +148,7 @@
   .player-row.rank-1::before { background: var(--gold); }
   .player-row.rank-2::before { background: #b0b8c8; }
   .player-row.rank-3::before { background: #c87941; }
-  .player-row.rank-1 { border-color: rgba(245,197,66,0.2); background: linear-gradient(135deg, rgba(245,197,66,0.05) 0%, var(--surface) 60%); }
+  .player-row.rank-1 { border-color: rgba(233,202,188,0.3); background: linear-gradient(135deg, rgba(233,202,188,0.08) 0%, var(--surface) 60%); }
 
   .rank-badge {
     width: 36px; height: 36px;
@@ -158,7 +160,7 @@
     color: var(--text2);
     flex-shrink: 0;
   }
-  .rank-1 .rank-badge { background: rgba(245,197,66,0.15); color: var(--gold); }
+  .rank-1 .rank-badge { background: rgba(233,202,188,0.2); color: var(--gold); }
   .rank-2 .rank-badge { background: rgba(176,184,200,0.15); color: #b0b8c8; }
   .rank-3 .rank-badge { background: rgba(200,121,65,0.15); color: #c87941; }
 
@@ -290,9 +292,11 @@
   /* Matches view */
   .matches-section { margin-bottom: 28px; }
   .group-header {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
     color: var(--gold);
     padding: 16px 0 8px;
     display: flex;
@@ -396,8 +400,8 @@
     cursor: pointer;
     transition: all 0.15s;
   }
-  .btn-primary { background: var(--gold); color: #0a0e1a; }
-  .btn-primary:hover { background: var(--gold2); transform: translateY(-1px); }
+  .btn-primary { background: var(--gold2); color: #f5ede5; }
+  .btn-primary:hover { background: var(--cd867d); filter: brightness(1.1); transform: translateY(-1px); }
   .btn-ghost { background: var(--surface); border: 1px solid var(--border); color: var(--text2); }
   .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
 
@@ -579,6 +583,7 @@
     <button class="tab active" onclick="showTab('leaderboard')">🏅 Topplista</button>
     <button class="tab" onclick="showTab('analysis')">📊 Analys</button>
     <button class="tab" onclick="showTab('matches')">⚽ Matcher & Facit</button>
+    <button class="tab" onclick="showTab('submit')">✏️ Lämna in tips</button>
     <button class="tab" onclick="showTab('admin')">⚙️ Admin</button>
   </div>
 
@@ -605,6 +610,44 @@
   <div id="tab-matches" class="tab-content fade-in" style="display:none">
     <div class="round-selector" id="roundSelector"></div>
     <div id="matchesContent"></div>
+  </div>
+
+
+  <!-- SUBMIT TAB -->
+  <div id="tab-submit" class="tab-content fade-in" style="display:none">
+    <div id="submitDone" style="display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:16px;text-align:center">
+      <div style="font-size:64px">🎉</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;color:var(--gold)">Tips inlämnade!</div>
+      <div style="color:var(--text2);font-size:15px" id="submitDoneMsg"></div>
+      <div style="color:var(--text2);font-size:13px;margin-top:8px">Du kan följa topplistan live på den här sidan.</div>
+    </div>
+    <div id="submitForm">
+      <div class="admin-bar">
+        <div>
+          <div class="admin-label">✏️ Lämna in dina tips</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:2px">Fyll i eller slumpa dina tips. När du skickat in är de låsta.</div>
+        </div>
+        <div class="admin-actions">
+          <button class="btn btn-primary" onclick="randomizeAllTips()">🎲 Slumpa alla tips</button>
+          <button class="btn btn-ghost" onclick="clearAllTips()">✕ Rensa</button>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:16px">
+        <label style="display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:6px">Ditt namn *</label>
+        <input class="form-input" id="submitName" placeholder="Förnamn Efternamn" style="max-width:340px" />
+      </div>
+      <div id="submitMatchGroups"></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:12px">⚽ Skiljefråga</div>
+        <div style="font-size:14px;color:var(--text2);margin-bottom:10px">Hur många mål görs totalt i gruppspelet? (72 matcher)<br><span style="font-size:12px;color:var(--muted)">Används vid lika poäng. Närmast utan att överstiga vinner.</span></div>
+        <input class="form-input" id="submitTiebreaker" type="number" min="0" max="500" placeholder="Antal mål" style="max-width:180px" />
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:40px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="submitTips()" style="padding:12px 32px;font-size:15px">✅ Skicka in mina tips</button>
+        <div id="submitError" style="display:none;color:var(--red);font-size:13px"></div>
+        <div id="submitProgress" style="display:none;color:var(--text2);font-size:13px">Skickar...</div>
+      </div>
+    </div>
   </div>
 
   <!-- ADMIN TAB -->
@@ -664,7 +707,7 @@
 </div>
 
 <footer class="container">
-  <span>VM-Tips 2026 · Intern tävling</span>
+  <span>BabyBjörns VM-Tips 2026 · Intern tävling</span>
   <span style="font-family:'DM Mono',monospace" id="lastUpdated"></span>
 </footer>
 
@@ -1162,6 +1205,99 @@ function resetData() {
   saveState();
 }
 
+
+// ============================================================
+// SUBMIT TIPS
+// ============================================================
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwRTNYd2eJwrUIDCIYfyt8WcvhlNvoqy4WMf-VaW6HdHSERtO2Jll5WMpKO3z-dmxt_/exec'; // Ersätt med din Google Apps Script URL
+
+let submitTips_data = {}; // temp tips while filling in
+
+function renderSubmitTab() {
+  const groups = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  const cont = document.getElementById('submitMatchGroups');
+  if (!cont) return;
+  cont.innerHTML = groups.map(g => {
+    const matches = MATCHES.filter(m => m.group === g);
+    const cards = matches.map(m => {
+      const cur = submitTips_data[m.id] || '';
+      const b1 = cur === '1' ? 'tip-btn sel-1' : 'tip-btn';
+      const bx = cur === 'X' ? 'tip-btn sel-x' : 'tip-btn';
+      const b2 = cur === '2' ? 'tip-btn sel-2' : 'tip-btn';
+      return `<div class="tip-row">
+        <div class="tip-match-name">${m.home} – ${m.away} <span style="color:var(--muted)">(${m.date})</span></div>
+        <div class="tip-btns">
+          <button class="${b1}" onclick="setSubmitTip('${m.id}','1')">1</button>
+          <button class="${bx}" onclick="setSubmitTip('${m.id}','X')">X</button>
+          <button class="${b2}" onclick="setSubmitTip('${m.id}','2')">2</button>
+        </div>
+      </div>`;
+    }).join('');
+    return `<div style="margin-bottom:16px">
+      <div class="group-header">Grupp ${g}</div>
+      <div class="tips-grid" style="max-height:none">${cards}</div>
+    </div>`;
+  }).join('');
+}
+
+function setSubmitTip(matchId, val) {
+  if (submitTips_data[matchId] === val) delete submitTips_data[matchId];
+  else submitTips_data[matchId] = val;
+  renderSubmitTab();
+}
+
+function randomizeAllTips() {
+  const options = ['1','X','2'];
+  MATCHES.forEach(m => {
+    submitTips_data[m.id] = options[Math.floor(Math.random() * 3)];
+  });
+  renderSubmitTab();
+}
+
+function clearAllTips() {
+  submitTips_data = {};
+  renderSubmitTab();
+}
+
+async function submitTips() {
+  const name = document.getElementById('submitName').value.trim();
+  const tiebreaker = document.getElementById('submitTiebreaker').value.trim();
+  const errEl = document.getElementById('submitError');
+  const progEl = document.getElementById('submitProgress');
+  errEl.style.display = 'none';
+
+  if (!name) { errEl.textContent = 'Ange ditt namn.'; errEl.style.display = ''; return; }
+  if (!tiebreaker) { errEl.textContent = 'Ange ett svar på skiljefrågan.'; errEl.style.display = ''; return; }
+  const tippedCount = Object.keys(submitTips_data).length;
+  if (tippedCount < 72) {
+    errEl.textContent = `Du har tippar ${tippedCount}/72 matcher. Fyll i alla eller slumpa resten.`; errEl.style.display = ''; return;
+  }
+
+  progEl.style.display = '';
+  try {
+    const response = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      body: JSON.stringify({ name, tiebreaker, tips: submitTips_data }),
+    });
+    const data = await response.json();
+    if (data.success) {
+      document.getElementById('submitForm').style.display = 'none';
+      document.getElementById('submitDone').style.display = 'flex';
+      document.getElementById('submitDoneMsg').textContent = name + ', dina tips är nu sparade. Lycka till!';
+    } else if (data.error === 'DUPLICATE') {
+      errEl.textContent = 'Det finns redan tips inlämnade för det namnet. Kontakta admin om du vill ändra.';
+      errEl.style.display = '';
+    } else {
+      errEl.textContent = 'Något gick fel: ' + data.error;
+      errEl.style.display = '';
+    }
+  } catch(e) {
+    errEl.textContent = 'Kunde inte ansluta. Kontrollera att webb-app URL:en är inställd.';
+    errEl.style.display = '';
+  }
+  progEl.style.display = 'none';
+}
+
 // ============================================================
 // ADMIN PASSWORD
 // ============================================================
@@ -1197,6 +1333,7 @@ function showTab(name) {
   document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-' + name).style.display = '';
   event.target.classList.add('active');
+  if (name === 'submit') { renderSubmitTab(); }
   if (name !== 'admin') {
     adminUnlocked = false;
     document.getElementById('adminLock').style.display = '';
