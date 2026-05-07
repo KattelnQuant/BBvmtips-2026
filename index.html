@@ -1209,10 +1209,10 @@ function importData(e) {
   reader.onload = ev => {
     try {
       const data = JSON.parse(ev.target.result);
-      if (data.players && data.results) {
-        state = data;
+      if (data.players && Array.isArray(data.players)) {
+        state.players = data.players;
         saveState();
-        alert('Data importerad!');
+        alert('Data importerad! ' + data.players.length + ' spelare laddade.');
       } else { alert('Ogiltigt format.'); }
     } catch { alert('Kunde inte läsa filen.'); }
   };
