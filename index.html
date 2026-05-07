@@ -815,13 +815,18 @@ async function loadPlayersFromGitHub() {
     if (!res.ok) return;
     const data = await res.json();
     if (data.players && Array.isArray(data.players)) {
-      // Merge: keep existing results, replace players
+      // players.json är alltid källan till sanning för spelare
+      // Behåll bara results från localStorage
+      const savedResults = state.results || {};
       state.players = data.players;
+      state.results = savedResults;
       localStorage.setItem('vmtips2026', JSON.stringify(state));
       render();
     }
   } catch(e) {
-    // players.json doesn't exist yet, that's fine
+    // players.json finns inte än, visa tom sida
+    state.players = [];
+    render();
   }
 }
 
