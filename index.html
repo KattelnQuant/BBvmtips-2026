@@ -674,7 +674,8 @@
         </div>
         <div class="admin-actions">
           <button class="btn btn-primary" onclick="openAddPlayer()">+ Lägg till deltagare</button>
-          <button class="btn btn-ghost" onclick="exportData()">⬇ Exportera JSON</button>
+          <button class="btn btn-ghost" onclick="exportData()">⬇ Exportera spelare</button>
+          <button class="btn btn-ghost" onclick="exportResults()">⬇ Exportera facit</button>
           <button class="btn btn-ghost" onclick="importTrigger()">⬆ Importera JSON</button>
           <button class="btn btn-ghost" onclick="resetData()" style="color:var(--red)">🗑 Rensa allt</button>
         </div>
@@ -815,18 +816,27 @@ async function loadPlayersFromGitHub() {
     if (!res.ok) return;
     const data = await res.json();
     if (data.players && Array.isArray(data.players)) {
-      // players.json är alltid källan till sanning för spelare
-      // Behåll bara results från localStorage
-      const savedResults = state.results || {};
       state.players = data.players;
-      state.results = savedResults;
       localStorage.setItem('vmtips2026', JSON.stringify(state));
       render();
     }
   } catch(e) {
-    // players.json finns inte än, visa tom sida
     state.players = [];
     render();
+  }
+}
+
+async function loadResultsFromGitHub() {
+  try {
+    const res = await fetch('results.json?t=' + Date.now());
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.results) {
+      state.results = data.results;
+      render();
+    }
+  } catch(e) {
+    // results.json finns inte än
   }
 }
 
@@ -852,7 +862,6 @@ function loadState() {
 
 function saveState() {
   state.lastUpdated = new Date().toISOString();
-  // Spara bara results i localStorage, aldrig players
   localStorage.setItem('vmtips2026', JSON.stringify({ results: state.results }));
   render();
 }
@@ -1203,10 +1212,18 @@ function closeModalOutside(e) { if (e.target === document.getElementById('player
 // IMPORT / EXPORT
 // ============================================================
 function exportData() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify({ players: state.players, lastUpdated: new Date().toISOString() }, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'vmtips2026.json';
+  a.download = 'players.json';
+  a.click();
+}
+
+function exportResults() {
+  const blob = new Blob([JSON.stringify({ results: state.results, lastUpdated: new Date().toISOString() }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'results.json';
   a.click();
 }
 
@@ -1377,9 +1394,9 @@ function showTab(name) {
 // INIT
 // ============================================================
 loadState();
-loadPlayersFromGitHub().then(() => render());
+Promise.all([loadPlayersFromGitHub(), loadResultsFromGitHub()]).then(() => render());
 // Refresh every 2 minutes
-setInterval(() => loadPlayersFromGitHub().then(() => render()), 120000);
+setInterval(() => Promise.all([loadPlayersFromGitHub(), loadResultsFromGitHub()]).then(() => render()), 120000);
 </script>
 </body>
 </html>
