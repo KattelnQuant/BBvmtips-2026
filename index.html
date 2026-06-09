@@ -688,6 +688,19 @@
 
 </div><!-- end container -->
 
+
+<!-- Modal: Player Tips -->
+<div class="modal-overlay" id="playerTipsModal" style="display:none" onclick="closePlayerModal(event)">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:700px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h2 id="playerTipsName" style="margin:0"></h2>
+      <button class="btn btn-ghost" onclick="closePlayerModal()" style="padding:6px 12px">✕ Stäng</button>
+    </div>
+    <div id="playerTipsStats" style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap"></div>
+    <div id="playerTipsGroups"></div>
+  </div>
+</div>
+
 <!-- Modal: Add/Edit Player -->
 <div class="modal-overlay" id="playerModal" style="display:none" onclick="closeModalOutside(event)">
   <div class="modal" onclick="event.stopPropagation()">
@@ -928,7 +941,7 @@ function renderLeaderboard() {
       return `<div class="spark-bar ${cls}" style="height:${h}px"></div>`;
     }).join('');
 
-    return `<div class="player-row rank-${rank <= 3 ? rank : ''} fade-in" style="animation-delay:${i*0.04}s">
+    return `<div class="player-row rank-${rank <= 3 ? rank : ''} fade-in" style="animation-delay:${i*0.04}s;cursor:pointer" onclick="openPlayerTips('${p.id}')">
       <div class="rank-badge">${rank <= 3 ? ['🥇','🥈','🥉'][rank-1] : rank}</div>
       <div class="player-name">${p.name}</div>
       <div class="player-sparkline">${sparks}</div>
@@ -1252,6 +1265,68 @@ function resetData() {
   saveState();
 }
 
+
+
+// ============================================================
+// PLAYER TIPS MODAL
+// ============================================================
+function openPlayerTips(playerId) {
+  const player = state.players.find(p => p.id === playerId);
+  if (!player) return;
+
+  const score = getPlayerScore(player);
+  document.getElementById('playerTipsName').textContent = player.name;
+
+  // Stats bar
+  const tipped = Object.keys(player.tips).length;
+  const ones = Object.values(player.tips).filter(v => v === '1').length;
+  const exes = Object.values(player.tips).filter(v => v === 'X').length;
+  const twos = Object.values(player.tips).filter(v => v === '2').length;
+
+  document.getElementById('playerTipsStats').innerHTML = `
+    <div class="meta-chip">Poäng: <span>${score.total}p</span></div>
+    <div class="meta-chip">Träffsäkerhet: <span>${score.acc}%</span></div>
+    <div class="meta-chip">Tips: <span>${tipped}/72</span></div>
+    <div class="meta-chip">1: <span>${ones}</span></div>
+    <div class="meta-chip">X: <span>${exes}</span></div>
+    <div class="meta-chip">2: <span>${twos}</span></div>
+    <div class="meta-chip">Skiljefråga: <span>${player.tiebreaker || '–'} mål</span></div>
+  `;
+
+  // Groups
+  const groups = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  document.getElementById('playerTipsGroups').innerHTML = groups.map(g => {
+    const matches = MATCHES.filter(m => m.group === g);
+    const rows = matches.map(m => {
+      const tip = player.tips[m.id] || '–';
+      const result = state.results[m.id];
+      const correct = result && tip === result;
+      const wrong = result && tip !== result;
+      const tipColor = tip === '1' ? 'color:var(--green)' : tip === 'X' ? 'color:var(--gold)' : tip === '2' ? 'color:var(--blue)' : 'color:var(--muted)';
+      const rowBg = correct ? 'background:rgba(34,197,94,0.06)' : wrong ? 'background:rgba(239,68,68,0.06)' : '';
+      const icon = correct ? '✅' : wrong ? '❌' : result ? '–' : '';
+      return `<div style="display:grid;grid-template-columns:30px 1fr 40px 40px 30px;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--border);font-size:13px;${rowBg}">
+        <div style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">${m.id}</div>
+        <div>${m.home} – ${m.away}</div>
+        <div style="font-family:'DM Mono',monospace;font-weight:600;${tipColor}">${tip}</div>
+        <div style="font-family:'DM Mono',monospace;color:var(--text2)">${result || '–'}</div>
+        <div>${icon}</div>
+      </div>`;
+    }).join('');
+    return `<div style="margin-bottom:12px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--gold);padding:8px 10px;background:var(--surface2);border-radius:6px 6px 0 0">Grupp ${g}</div>
+      <div style="border:1px solid var(--border);border-top:none;border-radius:0 0 6px 6px">${rows}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('playerTipsModal').style.display = 'flex';
+}
+
+function closePlayerModal(e) {
+  if (!e || e.target === document.getElementById('playerTipsModal')) {
+    document.getElementById('playerTipsModal').style.display = 'none';
+  }
+}
 
 // ============================================================
 // SUBMIT TIPS
