@@ -582,7 +582,6 @@
   <div class="tabs">
     <button class="tab active" onclick="showTab('leaderboard')">🏅 Topplista</button>
     <button class="tab" onclick="showTab('analysis')">📊 Analys</button>
-    <button class="tab" onclick="showTab('matches')">⚽ Matcher & Facit</button>
     <button class="tab" onclick="showTab('submit')">✏️ Lämna in tips</button>
     <button class="tab" onclick="showTab('admin')">⚙️ Admin</button>
   </div>
@@ -674,6 +673,7 @@
         </div>
         <div class="admin-actions">
           <button class="btn btn-primary" onclick="openAddPlayer()">+ Lägg till deltagare</button>
+          <button class="btn btn-ghost" onclick="showMatchesFromAdmin()">⚽ Matcher & Facit</button>
           <button class="btn btn-ghost" onclick="exportData()">⬇ Exportera spelare</button>
           <button class="btn btn-ghost" onclick="exportResults()">⬇ Exportera facit</button>
           <button class="btn btn-ghost" onclick="importTrigger()">⬆ Importera JSON</button>
@@ -1266,6 +1266,16 @@ function resetData() {
 }
 
 
+
+// ============================================================
+// SHOW MATCHES FROM ADMIN
+// ============================================================
+function showMatchesFromAdmin() {
+  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+  document.getElementById('tab-matches').style.display = '';
+  selectedMatchRound = 1;
+  renderMatches();
+}
 
 // ============================================================
 // PLAYER TIPS MODAL
