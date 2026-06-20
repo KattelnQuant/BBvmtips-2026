@@ -670,6 +670,10 @@
         <div>
           <div class="admin-label">⚙️ Adminpanel</div>
           <div style="font-size:13px;color:var(--text2);margin-top:2px">Lägg till deltagare och deras tips. Sätt matchresultat för automatisk rättning.</div>
+          <div style="margin-top:10px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:13px;color:var(--text2)">⚽ Totalt antal mål:</span>
+            <input class="form-input" type="number" min="0" id="totalGoalsInput" style="width:80px;padding:6px 10px" onchange="setTotalGoals(this.value)" />
+          </div>
         </div>
         <div class="admin-actions">
           <button class="btn btn-primary" onclick="openAddPlayer()">+ Lägg till deltagare</button>
@@ -846,6 +850,7 @@ async function loadResultsFromGitHub() {
     const data = await res.json();
     if (data.results) {
       state.results = data.results;
+      if (data.totalGoals !== undefined) state.totalGoals = data.totalGoals;
       render();
     }
   } catch(e) {
@@ -859,6 +864,7 @@ async function loadResultsFromGitHub() {
 let state = {
   players: [],   // { id, name, tips: { matchId: '1'|'X'|'2' } }
   results: {},   // { matchId: '1'|'X'|'2' }
+  totalGoals: 0, // totalt antal mål i gruppspelet (för skiljefråga)
   lastUpdated: new Date().toISOString()
 };
 
@@ -893,9 +899,22 @@ function getPlayerScore(player) {
 }
 
 function getRankedPlayers() {
+  const totalGoals = state.totalGoals || 0;
   return state.players
     .map(p => ({ ...p, score: getPlayerScore(p) }))
-    .sort((a,b) => b.score.total - a.score.total);
+    .sort((a,b) => {
+      // Primär sortering: poäng
+      if (b.score.total !== a.score.total) return b.score.total - a.score.total;
+      // Skiljefråga: närmast antal mål (utan att överstiga)
+      const aTB = parseInt(a.tiebreaker) || 0;
+      const bTB = parseInt(b.tiebreaker) || 0;
+      if (totalGoals > 0) {
+        const aDiff = Math.abs(aTB - totalGoals);
+        const bDiff = Math.abs(bTB - totalGoals);
+        return aDiff - bDiff;
+      }
+      return 0;
+    });
 }
 
 function getMatchesPlayed() {
@@ -1012,6 +1031,12 @@ function renderAnalysis() {
       <div class="stat-card-title">👥 Deltagare</div>
       <div class="stat-highlight">${state.players.length}</div>
       <div class="stat-sub">Genomsnitt: ${ranked.length ? Math.round(ranked.reduce((s,p)=>s+p.score.total,0)/ranked.length) : 0}p</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-title">⚽ Mål hittills</div>
+      <div class="stat-highlight">${state.totalGoals || 0}</div>
+      <div class="stat-sub">av ${played} spelade matcher · snitt ${played ? ((state.totalGoals||0)/played).toFixed(1) : '–'} mål/match</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(100, Math.round((state.totalGoals||0)/220*100))}%"></div></div>
     </div>
   `;
 
@@ -1131,6 +1156,8 @@ function setResult(matchId, val) {
 }
 
 function renderAdmin() {
+  const goalsInput = document.getElementById('totalGoalsInput');
+  if (goalsInput) goalsInput.value = state.totalGoals || 0;
   const list = document.getElementById('adminPlayerList');
   if (!state.players.length) {
     list.innerHTML = '<p style="color:var(--text2);padding:20px 0">Inga deltagare ännu.</p>';
@@ -1233,7 +1260,7 @@ function exportData() {
 }
 
 function exportResults() {
-  const blob = new Blob([JSON.stringify({ results: state.results, lastUpdated: new Date().toISOString() }, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify({ results: state.results, totalGoals: state.totalGoals || 0, lastUpdated: new Date().toISOString() }, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'results.json';
@@ -1266,6 +1293,14 @@ function resetData() {
 }
 
 
+
+// ============================================================
+// TOTAL GOALS
+// ============================================================
+function setTotalGoals(val) {
+  state.totalGoals = parseInt(val) || 0;
+  saveState();
+}
 
 // ============================================================
 // SHOW MATCHES FROM ADMIN
