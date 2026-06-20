@@ -925,6 +925,7 @@ function getMatchesPlayed() {
 // RENDER
 // ============================================================
 function render() {
+  renderTiebreakerCard();
   const played = getMatchesPlayed();
   document.getElementById('matchCount').innerHTML = `Matcher: <span>${played}/72</span>`;
   document.getElementById('playerCount').innerHTML = `Deltagare: <span>${state.players.length}</span>`;
@@ -971,27 +972,33 @@ function renderLeaderboard() {
   }).join('');
 }
 
-function getTiebreakerCard() {
+function renderTiebreakerCard() {
+  const el = document.getElementById('tiebreakerCard');
+  if (!el) return;
   const totalGoals = state.totalGoals || 0;
-  if (!state.players.length) return '';
-  const sorted = state.players.map(p => ({
-    name: p.name,
-    guess: parseInt(p.tiebreaker) || 0,
-    diff: Math.abs((parseInt(p.tiebreaker) || 0) - totalGoals)
-  })).sort((a,b) => a.diff - b.diff);
+  if (!state.players.length) { el.innerHTML = ''; return; }
+  const sorted = state.players.map(function(p) {
+    return {
+      name: p.name,
+      guess: parseInt(p.tiebreaker) || 0,
+      diff: Math.abs((parseInt(p.tiebreaker) || 0) - totalGoals)
+    };
+  }).sort(function(a,b) { return a.diff - b.diff; });
+
   const best = sorted[0];
-  const second = sorted[1];
-  const third = sorted[2];
   const statusText = totalGoals > 0 ? best.diff + ' mål fel' : 'facit ej satt ännu';
+
   let rows = '<div style="margin-top:10px">';
-  sorted.slice(0,5).forEach((p,i) => {
+  sorted.slice(0,5).forEach(function(p,i) {
     rows += '<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(--border)">'
       + '<span style="color:var(--text2)">' + (i+1) + '. ' + p.name.split(' ')[0] + '</span>'
-      + '<span style="font-family:'DM Mono',monospace">' + p.guess + ' mål · ' + (totalGoals > 0 ? p.diff + ' fel' : '?') + '</span>'
+      + '<span style="font-family:monospace">' + p.guess + ' mål · ' + (totalGoals > 0 ? p.diff + ' fel' : '?') + '</span>'
       + '</div>';
   });
   rows += '</div>';
-  return '<div class="stat-card"><div class="stat-card-title">🎯 Närmast i skiljefrågan</div>'
+
+  el.innerHTML = '<div class="stat-card">'
+    + '<div class="stat-card-title">🎯 Närmast i skiljefrågan</div>'
     + '<div class="stat-highlight">' + best.name.split(' ')[0] + '</div>'
     + '<div class="stat-sub">Gissade ' + best.guess + ' mål · ' + statusText + '</div>'
     + rows
@@ -1065,23 +1072,7 @@ function renderAnalysis() {
       <div class="stat-sub">av ${played} spelade matcher · snitt ${played ? ((state.totalGoals||0)/played).toFixed(1) : '–'} mål/match</div>
       <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(100, Math.round((state.totalGoals||0)/220*100))}%"></div></div>
     </div>
-    ${(() => {
-      const totalGoals = state.totalGoals || 0;
-      if (!state.players.length) return '';
-      const withTB = state.players.map(p => ({
-        name: p.name,
-        guess: parseInt(p.tiebreaker) || 0,
-        diff: Math.abs((parseInt(p.tiebreaker) || 0) - totalGoals)
-      })).sort((a,b) => a.diff - b.diff);
-      const best = withTB[0];
-      const second = withTB[1];
-      return \`<div class="stat-card">
-        <div class="stat-card-title">🎯 Närmast i skiljefrågan</div>
-        <div class="stat-highlight">\${best.name.split(' ')[0]}</div>
-        <div class="stat-sub">Gissade \${best.guess} mål · \${totalGoals > 0 ? best.diff + ' mål fel' : 'facit ej satt'}</div>
-        \${second ? \`<div style="margin-top:8px;font-size:12px;color:var(--text2)">2. \${second.name.split(' ')[0]} — \${second.guess} mål (\${second.diff} fel)</div>\` : ''}
-      </div>\`;
-    })()}
+    <div id="tiebreakerCard"></div>
   `;
 
   // Line chart
